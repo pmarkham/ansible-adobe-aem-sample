@@ -1,0 +1,51 @@
+# Restart AEM
+---
+- hosts: pdis:adis
+  gather_facts: false
+  sudo: true
+  tasks:
+      - name: Stop dispatchers
+        service: name=httpd state=stopped
+
+- hosts: publ
+  gather_facts: false
+  sudo: true
+  roles:
+      - { role: aem_service, state: 'stopped' }
+
+- hosts: auth-standby
+  gather_facts: false
+  sudo: true
+  roles:
+      - { role: aem_service, state: 'stopped' }
+
+- hosts: auth-primary
+  gather_facts: false
+  sudo: true
+  roles:
+      - { role: aem_service, state: 'stopped' }
+
+- hosts: auth-primary
+  gather_facts: false
+  sudo: true
+  roles:
+      - { role: aem_service, state: 'started' }
+
+- hosts: auth-standby
+  gather_facts: false
+  sudo: true
+  roles:
+      - { role: aem_service, state: 'started' }
+
+- hosts: publ
+  gather_facts: false
+  sudo: true
+  roles:
+      - { role: aem_service, state: 'started' }
+
+- hosts: pdis:adis
+  gather_facts: false
+  sudo: true
+  tasks:
+    - name: Start dispatchers
+      service: name=httpd state=started

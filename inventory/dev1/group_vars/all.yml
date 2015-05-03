@@ -1,0 +1,66 @@
+---
+node_environment: dev
+node_stream: dev1
+node_platform: tme
+
+license_product_name: 'Adobe AEM'
+license_customer_name: 'Example'
+license_downloadID: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
+
+agent_triggers_flush: 'ignore_default,on_receive,no_versioning'
+agent_triggers_repl: 'on_receive'
+
+# Assume the local home dir is the same as all remote home dirs
+local_home: "{{ lookup('env','HOME') }}"
+packages_repo: "{{ local_home }}/aempkgs/{{license_product_version}}"
+sysconfig_dir: "{{ local_home }}/sysconfig"
+
+agents_delete:
+    - name: flush
+      folder: agents.author
+    - name: publish
+      folder: agents.author
+    - name: publish_reverse
+      folder: agents.author
+    - name: static
+      folder: agents.author
+    - name: test_and_target
+      folder: agents.author
+    - name: flush
+      folder: agents.publish
+    - name: outbox
+      folder: agents.publish
+
+apache_pkg: httpd-2.2.15
+
+dispatcher_pkg: mod_dispatcher-4.1.9.10
+
+user_limits:
+    - user: prodapps
+      type: soft
+      item: nproc
+      value: 10240
+    - user: prodapps
+      type: hard
+      item: nofile
+      value: 20000
+    - user: prodapps
+      type: soft
+      item: nofile
+      value: 8192
+
+# Hostname of jmxtrans server
+jmxtrans_server_hostname: "{{metrics_server_hostname}}"
+
+# Port number that jmxtrans servers needs to contact
+jmxtrans_client_port: 8093
+
+# Hostname and port number of graphite server
+metrics_server_hostname: metrics01.dev1.example.com
+metrics_server_port: 2003
+
+# Directory and owner of jmxremote.access and jmxremote.password files
+jmxremote_dir: /opt/adobecq
+jmxremote_owner: prodapps
+
+apache_server_status_allow: "{{metrics_server_hostname}}"

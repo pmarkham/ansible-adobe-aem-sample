@@ -1,0 +1,58 @@
+SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE
+SAFE
+SAFE     ** WARNING ***
+SAFE
+SAFE     This playbook will completey destroy an AEM install and delete all of the data.
+SAFE     If you really want to do this, edit this file and removed the lines that begin
+SAFE     with SAFE.
+SAFE
+SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE SAFE
+---
+- hosts: localhost
+  gather_facts: false
+  vars_prompt:
+     - name: destroy 
+       prompt: "\n*** WARNING *** This will completely destroy AEM and delete all data.\nAre you sure you want to do this? (reply 'DESTROY!' to continue)"
+       private: false
+       confirm: true
+        
+  tasks:
+      - fail: msg='Not destroying AEM'
+        when: destroy != 'DESTROY!'
+
+      - name: '!!!!! Last chance to abort !!!!!'
+        pause: seconds=30
+ 
+- hosts: adis:pdis
+  gather_facts: false
+  sudo: true
+  tasks:
+    - service: name=httpd state=stopped
+      ignore_errors: true
+
+    - yum: name=mod_dispatcher state=absent
+
+    - yum: name=httpd state=absent
+  
+    - file: dest=/etc/httpd state=absent
+
+    - file: dest=/var/www/html/tme state=absent
+
+- hosts: auth:publ
+  gather_facts: false
+  sudo: true
+  tasks:
+    - service: name=adobecq state=stopped
+      ignore_errors: true
+
+    - yum: name=adobecq state=absent
+  
+    - yum: name=jdk state=absent
+
+    - file: dest=/opt/adobecq/crx-quickstart state=absent
+    
+    - file: dest=/opt/adobecq/license.properties state=absent
+    
+    - file: dest=/etc/sysconfig/adobecq state=absent
+
+    - lineinfile: dest=/etc/security/limits.conf regexp='^prodapps' state=absent

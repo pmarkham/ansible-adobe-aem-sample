@@ -1,0 +1,17 @@
+---
+license_product_version: '6.0.0'
+
+packages_common:
+    - name: 'AEM 6.0 Service Pack 2-1.0.zip'
+    - name: 'cq-6.0.0-hotfix-5869-1.0.2.zip'
+    - name: 'cq-6.0.0-hotfix-5918-wrapper-1.6.zip'
+      file: 'cq-6.0.0-hotfix-5918-1.6.zip'
+    - name: 'cq-6.0.0-hotfix-6316-1.1.zip'
+    - name: acs-aem-commons-content-1.9.6.zip
+      file: acs-aem-commons-content-1.9.6-min.zip
+    - name: acs-aem-tools-content-0.0.20.zip
+
+java_pkg: jdk-1.7.0_60
+java_home: "/usr/java/jdk1.7.0_60"
+
+adobecq_pkg: adobecq-6.0.0.5

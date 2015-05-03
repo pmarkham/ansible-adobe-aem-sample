@@ -1,0 +1,61 @@
+---
+- hosts: auth:publ
+  gather_facts: true
+  roles:
+    - java
+    - adobecq
+    - aem_license
+    - os_user_limits
+    - aem_osgi_settings
+    - aem_packages_sync
+    - jmxremote
+    - jmxtrans_client
+
+- hosts: auth-primary
+  gather_facts: false
+  roles:
+    - aem_author_primary
+
+- hosts: auth-primary:publ
+  gather_facts: false
+  roles:
+    - { role: aem_service, state: 'started' }
+    - aem_admin_password
+    - aem_sysconfig
+    - aem_packages_common
+    - aem_agent
+    - aem_bundle
+    - aem_group
+    - aem_user
+
+- hosts: auth-primary
+  gather_facts: false
+  roles:
+    - aem_packages_author
+
+- hosts: publ
+  gather_facts: false
+  roles:
+    - aem_packages_publish
+
+- hosts: auth-standby
+  gather_facts: false
+  roles:
+    - aem_author_standby
+
+
+- hosts: adis:pdis
+  gather_facts: false
+#  serial: 2
+#  max_fail_percentage: 20
+  roles:
+    - apache
+    - aem_dispatcher
+
+- hosts: auth-primary:publ
+  gather_facts: false
+  tasks:
+    - name: Notify that AEM restart may be needed
+      fail: msg="*** AEM Hotfixes applied to {{inventory_hostname}} -- check if AEM restart required ***"
+      when: aem_packages_common_installed.changed or aem_packages_instance_installed.changed
+  tags: aem_notify_restart

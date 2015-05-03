@@ -1,0 +1,20 @@
+---
+# Add any instance specific run modes
+run_modes: "primary,ingestor"
+
+service_uri: '/libs/granite/core/content/login.html'
+service_pattern: '<title>AEM Sign In</title>'
+service_authenticate: false
+
+agents_create:
+    - name: repl_publ01
+      folder: agents.author
+      title: Replication agent for publ01
+      transport_uri: http://publ01.dev1.example.com:4503/bin/receive?sling:authRequestLogin=1
+      triggers: '{{agent_triggers_repl}}'
+    - name: flush_dispatcher
+      folder: agents.author
+      title: Flush agent for dispatcher
+      transport_uri: http://{{auth_dispatcher}}:80/dispatcher/invalidate.cache
+      triggers: '{{agent_triggers_flush}}'
+      serialization_type: flush

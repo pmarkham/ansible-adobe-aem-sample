@@ -1,0 +1,78 @@
+# --- Availability Zone 1 (AZ1) hosts ---
+
+[az1-adis-primary]
+adis01.dev1.example.com
+
+[az1-auth-primary]
+auth01.dev1.example.com
+
+[az1-pdis]
+pdis01.dev1.example.com
+
+[az1-publ]
+publ01.dev1.example.com
+
+# --- Site groups ---
+
+# - AZ1 -
+
+[az1-auth:children]
+az1-auth-primary
+
+[az1-adis:children]
+az1-adis-primary
+
+[az1:children]
+az1-adis
+az1-auth
+az1-pdis
+az1-publ
+
+# --- Function groups ---
+
+[auth-primary:children]
+az1-auth-primary
+
+[adis-primary:children]
+az1-adis-primary
+
+[auth:children]
+auth-primary
+
+[publ:children]
+az1-publ
+
+[pdis:children]
+az1-pdis
+
+[adis:children]
+az1-adis
+
+# --- Default hosts managed by each jumphost ---
+[default-limit-bastion01.dev1.example.com:children]
+az1-auth
+az1-publ
+az1-adis
+az1-pdis
+
+# --- These servers need to decrypt the admin password stored using ansible-vault ---
+
+[credentials:children]
+auth
+publ
+
+# --- These servers need to decrypt the users passwords stored using ansible-vault ---
+
+[accounts:children]
+auth
+publ
+
+# enable this for aem 6.0 (disable 5.6.1 below)
+[aem600:children]
+auth
+publ
+
+# switch to cq 5.6.1 by enabling this and disabling aem600
+# [aem561:children]
+# auth
+# publ
