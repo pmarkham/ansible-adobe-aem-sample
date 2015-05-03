@@ -1,0 +1,194 @@
+---
+node_tier: dispatcher
+node_type: pdis
+
+apache_timeout: 120
+apache_keep_alive: 'On'
+apache_keep_alive_requests: 100
+apache_keep_alive_timeout: 130
+
+dispatcher_log_level: 2
+
+virtual_hosts:
+  - name: www.example.com
+    document_root: /var/www/html
+    conf_file_sequence: 50
+    rewrite_engine: 'on'
+    rewrite_log_level: 3
+    dispatcher_log_level: 2
+    dispatcher_statsfile_level: 6
+    apache_custom_config: |
+        # Enabling Server Side Includes for .html
+        <Directory /var/www/html>
+           Options Indexes FollowSymLinks +IncludesNOEXEC
+           AddType text/html .html
+           AddOutputFilter INCLUDES .html
+           AllowOverride All
+        </Directory>
+
+        #Bypass(allow) requests to /content/* from dispatcher direct access for test and diagnostic purpose
+        RewriteCond %{HTTP_HOST} ^pdis
+        RewriteRule ^/(.*)$ - [PT,L]
+    
+        #Bypass(allow) requests to /content/healthcheck.html
+        RewriteRule ^/content/healthcheck.html - [PT,L]
+    
+        #Block requests to /content/(.*)\.html 
+        Rewritecond %{REQUEST_URI} !/content/healthcheck.html
+        Rewritecond %{REQUEST_URI} ^/content/(.*)\.html
+        #RewriteRule ^/(.*)$ - [F,L]
+        RewriteRule ^/(.*)$ /404-page.html [R=301,L]
+    
+        #Bypass requests to /content/* (including /content/dam/*) and /etc/*
+        RewriteCond %{REQUEST_URI} ^/content [OR]
+        RewriteCond %{REQUEST_URI} ^/etc
+        RewriteRule ^/(.*)$ - [PT,L]
+    
+        #Rewrite: pass through /content/* /etc/* /server-status/*
+        RewriteCond %{REQUEST_URI} !^/content
+        RewriteCond %{REQUEST_URI} !^/etc
+        RewriteCond %{REQUEST_URI} !^/server-status
+        RewriteRule ^/(.*)$ /content/homepage/$1 [PT,L]
+    dispatcher_custom_filters:
+        - sequence: '0001'
+          comment: 'Deny everything first and the allow specific entries'
+          glob: '*'
+          type: 'deny'
+        - sequence: '0023'
+          comment: 'Allow non-public content directories'
+          glob: '* /content*'
+          type: 'allow'
+        - sequence: '0041'
+          comment: 'Enable specific mime types in non-public content directories'
+          glob: '* *.css *'
+          type: 'allow'
+        - sequence: '0042'
+          comment: ''
+          glob: '* *.gif *'
+          type: 'allow'
+        - sequence: '0043'
+          comment: ''
+          glob: '* *.ico *'
+          type: 'allow'
+        - sequence: '0044'
+          comment: ''
+          glob: '* *.js *'
+          type: 'allow'
+        - sequence: '0045'
+          comment: ''
+          glob: '* *.png *'
+          type: 'allow'
+        - sequence: '0046'
+          comment: ''
+          glob: '* *.swf *'
+          type: 'allow'
+        - sequence: '0047'
+          comment: ''
+          glob: '* *.jpg *'
+          type: 'allow'
+        - sequence: '0048'
+          comment: ''
+          url: '*.jpeg'
+          type: 'allow'
+        - sequence: '0049'
+          comment: ''
+          url: '*.woff'
+          type: 'allow'
+        - sequence: '0050'
+          comment: ''
+          url: '*.ttf'
+          type: 'allow'
+        - sequence: '0051'
+          comment: ''
+          url: '*.eot'
+          type: 'allow'
+        - sequence: '0061'
+          comment: 'Allow posts to form selectors under content'
+          glob: 'POST /content/[.]*.form.html'
+          type: 'allow'
+        - sequence: '0062'
+          comment: 'Enable personalization'
+          glob: '* /libs/cq/personalization/*'
+          type: 'allow'
+        - sequence: '0080'
+          comment: 'Deny content grabbing'
+          glob: 'GET *.infinity.json*'
+          type: 'deny'
+        - sequence: '0081'
+          comment: ''
+          glob: 'GET *.tidy.json*'
+          type: 'deny'
+        - sequence: '0082'
+          comment: ''
+          glob: 'GET *.tidy.*.json*'
+          type: 'deny'
+        - sequence: '0083'
+          comment: ''
+          glob: 'GET *.sysview.xml*'
+          type: 'deny'
+        - sequence: '0084'
+          comment: ''
+          glob: 'GET *.docview.json*'
+          type: 'deny'
+        - sequence: '0085'
+          comment: ''
+          glob: 'GET *.docview.xml*'
+          type: 'deny'
+        - sequence: '0086'
+          comment: ''
+          glob: 'GET *.*[5-9].json*'
+          type: 'deny'
+        - sequence: '0087'
+          comment: ''
+          glob: 'GET *.[0-4].json*'
+          type: 'allow'
+        - sequence: '0088'
+          comment: ''
+          glob: 'GET *.feed.*'
+          type: 'deny'
+        - sequence: '0089'
+          comment: ''
+          glob: 'GET /content/*/.json'
+          type: 'deny'
+        - sequence: '0090'
+          comment: 'Disable query'
+          glob: '* *.query.json*'
+          type: 'deny'
+        - sequence: '1002'
+          comment: 'Enable client context'
+          glob: '* /etc/clientcontext/*'
+          type: 'allow'
+        - sequence: '1011'
+          comment: ''
+          glob: '* /content.pages.json*'
+          type: 'deny'
+        - sequence: '1012'
+          comment: ''
+          glob: '* /content.languages.json*'
+          type: 'deny'
+        - sequence: '1013'
+          comment: ''
+          glob: '* /content.blueprint.json*'
+          type: 'deny'
+        - sequence: '1301'
+          comment: 'Allow access to /etc/designs'
+          glob: '* /etc/designs/*'
+          type: 'allow'
+    dispatcher_custom_rules:
+        - sequence: '0000'
+          comment: ''
+          glob: '*'
+          type: 'allow'
+    dispatcher_ignore_url:
+        - sequence: '0000'
+          comment: ''
+          glob: 'widgetID'
+          type: 'deny'
+
+# dispatcher_custom_filters, dispatcher_custom_rules and dispatcher_ignore_url
+# each take four parameters, e.g.
+
+#     sequence: '0100'
+#     comment: 'Allow saml_login'
+#     glob: '* /saml_login*'
+#     type: 'allow'

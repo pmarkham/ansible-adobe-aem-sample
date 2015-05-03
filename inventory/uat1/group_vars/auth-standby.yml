@@ -1,0 +1,17 @@
+# author
+---
+# Add any instance specific run modes
+run_modes: ""
+
+# service pattern when the author is in standby mode
+service_uri: '/system/console/bundles'
+service_pattern: '<title>Adobe Experience Manager Web Console - Bundles</title>'
+service_authenticate: true
+
+# service pattern when the author is in stand alone (i.e. not standby) mode
+service_uri_stand_alone: '/libs/granite/core/content/login.html'
+service_pattern_stand_alone: '<title>AEM Sign In</title>'
+service_authenticate_stand_alone: false
+
+# No agents needed on auth-standby as they'll be synchronised from auth-master
+agents_create: []

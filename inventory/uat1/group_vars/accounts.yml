@@ -1,0 +1,15 @@
+---
+# Groups and users. Should normally be encrypted with Ansible vault as it contains passwords.
+aem_groups:
+    - id:     'sysadmin'
+      state:  'present'
+      name:   'Systems Admins'
+      groups: 'administrators'
+
+aem_users:
+    - id:         'test'
+      state:      'present'
+      first_name: 'Test'
+      last_name:  'Account'
+      password:   'abc123'
+      groups:     'sysadmin'

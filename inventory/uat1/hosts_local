@@ -1,0 +1,6 @@
+# Inventory file with just the local host listed. This is used by the 'run' command to retrive the
+# platform and environment variables. Using this file instead of the normal inventory stops it prompting
+# for the vault password as, at the point this is used, we don't know which vault password file to use.
+
+[localhost]
+127.0.0.1

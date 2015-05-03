@@ -1,0 +1,18 @@
+---
+port: 4503
+node_tier: publisher
+node_type: publ
+
+service_uri: '/libs/granite/core/content/login.html'
+service_pattern: '<title>AEM Sign In</title>'
+service_authenticate: false
+
+aem_bundles:
+  - name: org.apache.sling.jcr.webdav
+    state: disabled
+  - name: org.apache.sling.jcr.davex
+    state: disabled
+
+packages_publish: []
+
+java_options: "-server -Xms${JAVA_MEM}m -Xmx${JAVA_MEM}m -XX:MaxPermSize=256M -Djava.awt.headless=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8093 -Dcom.sun.management.jmxremote.rmi.port=8093 -Dcom.sun.management.jmxremote.authenticate=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.password.file=/opt/adobecq/jmxremote.password -Dcom.sun.management.jmxremote.access.file=/opt/adobecq/jmxremote.access -XX:+UnlockDiagnosticVMOptions -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintTenuringDistribution -Xloggc:/opt/adobecq/crx-quickstart/logs/gc.log"

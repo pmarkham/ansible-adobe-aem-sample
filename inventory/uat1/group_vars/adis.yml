@@ -1,0 +1,121 @@
+---
+node_tier: dispatcher
+node_type: adis
+
+apache_timeout: 120
+apache_keep_alive: 'On'
+apache_keep_alive_requests: 100
+apache_keep_alive_timeout: 130
+
+dispatcher_log_level: 2
+
+virtual_hosts:
+  - name: www.example.com
+    document_root: /var/www/html
+    conf_file_sequence: 50
+    rewrite_engine: 'on'
+    rewrite_log_level: 1
+    dispatcher_log_level: 2
+    dispatcher_statsfile_level: 0
+    allow_authorized: 0
+    apache_custom_config: |
+        # Enabling Server Side Includes for .html
+        <Directory /var/www/html>
+           Options Indexes FollowSymLinks +IncludesNOEXEC
+           AddType text/html .html
+           AddOutputFilter INCLUDES .html
+           AllowOverride All
+        </Directory>
+
+        RewriteCond %{REQUEST_URI} ^/$ [OR]
+        RewriteCond %{REQUEST_URI} ^/apps [OR]
+        RewriteCond %{REQUEST_URI} ^/bin [OR]
+        RewriteCond %{REQUEST_URI} ^/content/ [OR]
+        RewriteCond %{REQUEST_URI} ^/crx [OR]
+        RewriteCond %{REQUEST_URI} ^/etc [OR]
+        RewriteCond %{REQUEST_URI} ^/home/.*$ [OR]
+        RewriteCond %{REQUEST_URI} ^/index.html [OR]
+        RewriteCond %{REQUEST_URI} ^/libs [OR]
+        RewriteCond %{REQUEST_URI} ^/system [OR]
+        RewriteCond %{REQUEST_URI} ^/tmp [OR]
+        RewriteCond %{REQUEST_URI} ^/var [OR]
+        RewriteCond %{REQUEST_URI} ^/start [OR]
+        RewriteCond %{REQUEST_URI} ^/cf [OR]
+        RewriteCond %{REQUEST_URI} ^/crxde [OR]
+        RewriteCond %{REQUEST_URI} ^/damadmin [OR]
+        RewriteCond %{REQUEST_URI} ^/favicon.ico [OR]
+        RewriteCond %{REQUEST_URI} ^/inbox [OR]
+        RewriteCond %{REQUEST_URI} ^/mcmadmin [OR]
+        RewriteCond %{REQUEST_URI} ^/miscadmin [OR]
+        RewriteCond %{REQUEST_URI} ^/server-status [OR]
+        RewriteCond %{REQUEST_URI} ^/siteadmin [OR]
+        RewriteCond %{REQUEST_URI} ^/siteadmin.html [OR]
+        RewriteCond %{REQUEST_URI} ^/socoadmin [OR]
+        RewriteCond %{REQUEST_URI} ^/tagging [OR]
+        RewriteCond %{REQUEST_URI} ^/useradmin [OR]
+        RewriteCond %{REQUEST_URI} ^/welcome [OR]
+        RewriteCond %{REQUEST_URI} ^/workflow
+        RewriteRule ^/(.*)$ - [PT,L]
+
+        #AEM 6 Sepcific editor.html/sites.html bypassing
+        RewriteCond %{REQUEST_URI} ^/editor.html [OR]
+        RewriteCond %{REQUEST_URI} ^/sites.html [OR]
+        RewriteCond %{REQUEST_URI} ^/projects.html [OR]
+        RewriteCond %{REQUEST_URI} ^/assets.html [OR]
+        RewriteCond %{REQUEST_URI} ^/aem/apps.html [OR]
+        RewriteCond %{REQUEST_URI} ^/aem/forms.html [OR]
+        RewriteCond %{REQUEST_URI} ^/aem/catalogs.html [OR]
+        RewriteCond %{REQUEST_URI} ^/aem/forms.html [OR]
+        RewriteCond %{REQUEST_URI} ^/aem/orders.html
+        RewriteRule ^/(.*)$ - [PT,L]
+    dispatcher_custom_filters:
+        - sequence: '0000'
+          comment: ''
+          glob: '*'
+          type: 'allow'
+        - sequence: '0001'
+          comment: ' Deny external access to system console'
+          glob: '* /system/*'
+          type: 'deny'
+        - sequence: '0002'
+          comment: 'Deny external access to CRX web application'
+          glob: '* /crx*'
+          type: 'deny'
+        - sequence: '0003'
+          comment: 'Deny external access to servlet engine console'
+          glob: '* /admin/*'
+          type: 'deny'
+        - sequence: '0004'
+          comment: 'Allow access to logout'
+          glob: '* /system/sling/logout*'
+          type: 'allow'
+    dispatcher_custom_rules:
+        - sequence: '0000'
+          comment: ''
+          glob: '*'
+          type: 'deny'
+        - sequence: '0001'
+          comment: ''
+          glob: '/libs/*'
+          type: 'allow'
+        - sequence: '0002'
+          comment: ''
+          glob: '/libs/*.html'
+          type: 'deny'
+        - sequence: '0003'
+          comment: ''
+          glob: '/apps/*'
+          type: 'allow'
+        - sequence: '0004'
+          comment: ''
+          glob: '/apps/*.html'
+          type: 'deny'
+        - sequence: '0005'
+          comment: 'This page contains a "Welcome, User XXX" message'
+          glob: '/libs/cq/core/content/welcome.*'
+          type: 'deny'
+    dispatcher_ignore_url:
+        - sequence: '0003'
+          comment: ''
+          glob: 'widgetID'
+          type: 'deny'
