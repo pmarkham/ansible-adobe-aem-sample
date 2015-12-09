@@ -2,21 +2,22 @@
 license_product_version: '5.6.0'
 
 packages_common:
-       - cq-5.6.1-hotfix-3707-1.0.0.zip
-       - cq-5.6.1-hotfix-3306.zip
-       - cq-5.6.1-hotfix-3421.zip
-       - cq-5.6.1-hotfix-3457-1.0.zip
-# Seems to break CQ
-#       - cq-5.6.1-hotfix-3591-1.0.zip
-       - cq-5.6.1-hotfix-3751-1.0.zip
-       - cq-5.6.1-hotfix-3695-1.0.zip
-       - cq-5.5.0-hotfix-NPR-3368-1.2.zip
-       - cq-5.6.1-hotfix-3544-1.0.zip
-       - cq-5.6.1-hotfix-3728.zip
-       - cq-5.6.1-hotfix-3692-1.2.zip
-       - cq-5.6.1-hotfix-3709-1.2.zip
-       - cq-5.6.1-hotfix-3863.zip
-       - cq-5.6.1-hotfix-4101-1.0.zip
+       - name: cq-5.6.1-hotfix-3707-1.0.0.zip
+       - name: cq-5.6.1-hotfix-3306.zip
+       - name: cq-5.6.1-hotfix-3421.zip
+       - name: cq-5.6.1-hotfix-3457-1.0.zip
+       - name: cq-5.6.1-hotfix-3751-1.0.zip
+       - name: cq-5.6.1-hotfix-3695-1.0.zip
+       - name: cq-5.5.0-hotfix-NPR-3368-1.2.zip
+       - name: cq-5.6.1-hotfix-3544-1.0.zip
+       - name: cq-5.6.1-hotfix-3728.zip
+       - name: cq-5.6.1-hotfix-3692-1.2.zip
+       - name: cq-5.6.1-hotfix-3709-1.2.zip
+       - name: cq-5.6.1-hotfix-3863.zip
+       - name: cq-5.6.1-hotfix-4101-1.0.zip
+       - name: acs-aem-commons-content-1.9.6.zip
+         file: acs-aem-commons-content-1.9.6-min.zip
+
 
 java_pkg: jdk-1.7.0_60
 java_home: "/usr/java/jdk1.7.0_60"
